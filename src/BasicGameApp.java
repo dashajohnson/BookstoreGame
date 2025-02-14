@@ -27,10 +27,21 @@ import javax.swing.JPanel;
         //Declare the variables used in the program
         //You can set their initial values too
 
-        CatCharacter cat1;
-        CapybaraCharacter capybara1;
+        Character cat1;
+        Character capybara1;
+        Character book1;
+        Column column;
+        Character owls;
+
+        // below are the variables for the collisions
 
         boolean CatvsCapybara = false;
+        boolean BookvsCapybara = false;
+        boolean CatvsBook = false;
+        boolean CatvsColumn = false;
+        boolean CapybaravsColumn = false;
+        boolean BookvsColumn = false;
+
 
 
         Image backgroundPic;
@@ -66,14 +77,23 @@ import javax.swing.JPanel;
             //create (construct) the objects needed for the game
             backgroundPic = Toolkit.getDefaultToolkit().getImage("bookstore-scene.jpg");
 
-            cat1 = new CatCharacter(400,300,5,4,100,100);
+            cat1 = new Character(400,300,5,4,100,100);
             cat1.name = "luna";
             cat1.pic = Toolkit.getDefaultToolkit().getImage("luna-cat1.png");
 
-            capybara1 = new CapybaraCharacter(222,444,3,4,150,150);
+            capybara1 = new Character(222,444,3,4,150,150);
             capybara1.name = "charles";
             capybara1.pic = Toolkit.getDefaultToolkit().getImage("charles-capybara1.png");
 
+            book1 = new Character(200,300,4,2,50,50);
+            book1.name = "book";
+            book1.pic = Toolkit.getDefaultToolkit().getImage("book.png");
+
+            column = new Column(30,0,85,650);
+
+            owls = new Character(0,30,(int)(Math.random()*10+1),0,200,150);
+            owls.name = "owls";
+            owls.pic = Toolkit.getDefaultToolkit().getImage("owls.png");
 
         } // end BasicGameApp constructor
 
@@ -89,7 +109,7 @@ import javax.swing.JPanel;
         public void run() {
             //for the moment we will loop things forever.
             while (true) {
-                moveThings();//move all the game objects
+                moveThings(); //move all the game objects
                 collide();
                 render();  // paint the graphics
                 pause(10); // sleep for 10 ms
@@ -98,33 +118,59 @@ import javax.swing.JPanel;
         }
 
         public void moveThings() {
-            //call the move() code for each object
+            //call the move() or wrap () code for each object
 
             cat1.move();
-            cat1.printInfo();
 
             capybara1.move();
-            // capybara1.wrap();
-            capybara1.printInfo();
 
+            book1.move();
 
-            // add wrap
+            owls.wrap();
         }
 
-        public void collide(){
-            if (cat1.hitbox.intersects(capybara1.hitbox) == true && CatvsCapybara == false){
+        public void collide() {
+
+            if (cat1.hitbox.intersects(capybara1.hitbox) && !CatvsCapybara) {
                 CatvsCapybara = true;
-                // cat1.dx = -cat1.dx;
-                //   cat1.dy = -cat1.dy;
-               // capybara1.dx = -capybara1.dx;
-              //  capybara1.dy = -capybara1.dy;
-                cat1.width = cat1.width +50;
-                cat1.height = cat1.height +50;
+                capybara1.pic = Toolkit.getDefaultToolkit().getImage("scared-capybara.png");
+                cat1.pic = Toolkit.getDefaultToolkit().getImage("luna-cat1.png");
 
 
             }
-            if (cat1.hitbox.intersects(capybara1.hitbox) == false){ // reset collision boolean as soon as they separate
+            if (!cat1.hitbox.intersects(capybara1.hitbox)) { // reset collision boolean as soon as they separate
                 CatvsCapybara = false;
+            }
+            if (capybara1.hitbox.intersects(book1.hitbox) && !BookvsCapybara) {
+                System.out.println("switching capybara image back to neutral");
+                BookvsCapybara = true;
+                capybara1.pic = Toolkit.getDefaultToolkit().getImage("charles-capybara1.png");
+            }
+            if (!book1.hitbox.intersects(capybara1.hitbox)) { // reset collision boolean as soon as they separate
+                BookvsCapybara = false;
+            }
+            if (cat1.hitbox.intersects(book1.hitbox) && !CatvsBook) { // cat falls asleep after colliding w/ book
+                CatvsBook = true;
+                cat1.pic = Toolkit.getDefaultToolkit().getImage("cat-sleeping.png");
+            }
+            if (!cat1.hitbox.intersects(book1.hitbox)) {
+                CatvsBook = false;
+            }
+            if (cat1.hitbox.intersects(column.hitbox)) {
+                CatvsColumn = true;
+                cat1.dx = -cat1.dx;
+                cat1.dy = -cat1.dy;
+
+            }
+            if (capybara1.hitbox.intersects(column.hitbox)) {
+                CapybaravsColumn = true;
+                capybara1.dx = -capybara1.dx;
+                capybara1.dy = -capybara1.dy;
+            }
+            if (book1.hitbox.intersects(column.hitbox)) {
+                BookvsColumn = true;
+                book1.dx = -book1.dx;
+                book1.dy = -book1.dy;
             }
         }
 
@@ -139,13 +185,20 @@ import javax.swing.JPanel;
             //draw the images
 
             g.drawImage(cat1.pic,cat1.xpos,cat1.ypos,cat1.width,cat1.height,null);
-            g.drawRect(cat1.hitbox.x,cat1.hitbox.y,cat1.hitbox.width,cat1.hitbox.height);
+           // g.drawRect(cat1.hitbox.x,cat1.hitbox.y,cat1.hitbox.width,cat1.hitbox.height); // drawing the character in case we want to see the hitbox
 
             g.drawImage(capybara1.pic,capybara1.xpos,capybara1.ypos,capybara1.width,capybara1.height,null);
-            g.drawRect(capybara1.hitbox.x,capybara1.hitbox.y,capybara1.hitbox.width,capybara1.hitbox.height);
-           // System.out.println(capybara1.hitbox);
-           // g.fillRect(capybara1.xpos,capybara1.hitbox.y,capybara1.hitbox.width,capybara1.hitbox.height);
+           // g.drawRect(capybara1.hitbox.x,capybara1.hitbox.y,capybara1.hitbox.width,capybara1.hitbox.height);
 
+            g.drawImage(book1.pic,book1.xpos,book1.ypos,book1.width,book1.height,null);
+            //g.drawRect(book1.hitbox.x,book1.hitbox.y,book1.hitbox.width,book1.hitbox.height);
+
+            g.drawImage(owls.pic,owls.xpos,owls.ypos,owls.width,owls.height,null);
+
+           // g.setColor(Color.pink);
+           // g.drawRect(owls.owlbig.x,owls.owlbig.y,owls.owlbig.width,owls.owlbig.height);
+           // g.setColor(Color.yellow);
+           // g.drawRect(owls.owlsmall.x,owls.owlsmall.y,owls.owlsmall.width,owls.owlsmall.height);
 
 
             g.dispose();

@@ -1,6 +1,8 @@
+import org.w3c.dom.css.Rect;
+
 import java.awt.*;
 
-public class CatCharacter {
+public class Character {
 
     public String name;
     public Image pic;
@@ -12,13 +14,15 @@ public class CatCharacter {
     public int width;
     public boolean isAlive;
     public Rectangle hitbox;
+    public Rectangle owlbig; // used to make the complex hitbox for the owls
+    public Rectangle owlsmall;
 
-    public CatCharacter () {
+    public Character() {
         hitbox = new Rectangle(xpos, ypos, width, height);
 
     }
 
-    public CatCharacter(int paramXpos, int paramYpos, int paramDx, int paramDy, int paramWidth, int paramHeight){
+    public Character(int paramXpos, int paramYpos, int paramDx, int paramDy, int paramWidth, int paramHeight){
         xpos = paramXpos;
         ypos = paramYpos;
         dx = paramDx;
@@ -26,6 +30,8 @@ public class CatCharacter {
         width = paramWidth;
         height = paramHeight;
         hitbox = new Rectangle(xpos, ypos, width, height);
+        owlbig = new Rectangle(xpos + width/3,ypos,(int)(width/2.3),(int)(height/1.1));
+        owlsmall = new Rectangle(xpos + width/8,ypos + height/4,width/3, (int) (height/1.5));
 
     }
     public void move(){
@@ -41,6 +47,8 @@ public class CatCharacter {
             //right or left bounce
         }
         hitbox = new Rectangle(xpos, ypos, width, height);
+        owlbig = new Rectangle(xpos + width/3,ypos,(int)(width/2.3),(int)(height/1.1));
+        owlsmall = new Rectangle(xpos + width/8,ypos + height/4,width/3, (int) (height/1.5));
 
     }
     public void wrap(){
@@ -52,6 +60,8 @@ public class CatCharacter {
 
         }
         hitbox = new Rectangle(xpos, ypos, width, height);
+        owlbig = new Rectangle(xpos + width/3,ypos,(int)(width/2.3),(int)(height/1.1));
+        owlsmall = new Rectangle(xpos + width/8,ypos + height/4,width/3, (int) (height/1.5));
     }
 
 
